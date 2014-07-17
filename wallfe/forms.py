@@ -23,29 +23,8 @@
  MA 02110-1301, USA.
 """
 
-import flask
+from flask_wtf import Form
+from wtforms import validators, TextField
 
-from .forms import AddFeedList
-
-#Create the application
-APP = flask.Flask(__name__)
-APP.secret_key = 'Random Key'
-
-@APP.route('/', methods=['GET', 'POST'])
-def index():
-    """ Display the index page
-    """
-    return flask.render_template(
-            'index.html')
-
-@APP.route('/add-list', methods=['GET', 'POST'])
-def add_list():
-    """ Add a Feed URL to list
-    """
-    form = AddFeedList()
-    if form.validate():
-       return flask.redirect('/')
-    return flask.render_template(
-           'add_list.html',
-           form=form)
-
+class AddFeedList(Form):
+    feedlist_url = TextField(u'Feed List URL', [validators.required()])
