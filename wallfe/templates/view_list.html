@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    {% for slug in slugs %}
+        <a href="/{{ slug }}">{{slug}}</a>
+    {% endfor %}
+{% endblock %}

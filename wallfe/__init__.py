@@ -56,6 +56,16 @@ def add_list():
            'add_list.html',
            form=form)
 
+@APP.route('/view-list', methods=['GET', 'POST'])
+def view_list():
+    """ View list of feed
+    """
+    feedlists = db.all()
+    slugs = map(lambda x: x['slug'], feedlists)
+    return flask.render_template(
+            'view_list.html',
+            slugs=slugs)
+
 def parse_feed(feed_url):
     """ Parse the RSS Feed URL
     :arg url: the url of the feed to be parsed
@@ -84,4 +94,4 @@ def slugify(title):
     """ Slugify the feedlist title
     :arg title: the title of a feedlist
     """
-    return '-'.join(title.split())
+    return '-'.join(title.lower().split())
