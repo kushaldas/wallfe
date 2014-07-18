@@ -24,12 +24,17 @@
 """
 
 import flask
+import feedparser
+from tinydb import TinyDB
+from datetime import datetime
 
 from .forms import AddFeedList
 
 #Create the application
 APP = flask.Flask(__name__)
 APP.secret_key = 'Random Key'
+
+db = TinyDB('./wallfe/database/db.json')
 
 @APP.route('/', methods=['GET', 'POST'])
 def index():
@@ -44,8 +49,39 @@ def add_list():
     """
     form = AddFeedList()
     if form.validate():
-       return flask.redirect('/')
+        feedlist_url = form.feedlist_url.data
+        feedlist_dict = parse_feed(feedlist_url)
+        return flask.redirect('/')
     return flask.render_template(
            'add_list.html',
            form=form)
 
+def parse_feed(feed_url):
+    """ Parse the RSS Feed URL
+    :arg url: the url of the feed to be parsed
+    """
+    feedlist = feedparser.parse(feed_url)
+    feedlist_dict = {}
+    feedlist_dict['slug'] = slugify(feedlist.feed.title)
+    feedlist_dict['title'] = feedlist.feed.title
+    feedlist_dict['count'] = len(feedlist.entries)
+
+    entries = feedlist.entries
+    for counter, entry in enumerate(entries):
+        feedlist_dict[counter] = {}
+        feedlist_dict[counter]['author'] = entry.author
+        feedlist_dict[counter]['publisted'] = entry.published
+        feedlist_dict[counter]['link'] = entry.link
+        feedlist_dict[counter]['content'] = entry.content[0]
+        feedlist_dict[counter]['summary'] = entry.summary
+    feedlist_dict['updated_at'] = str(datetime.now())
+
+    db.insert(feedlist_dict)
+
+    return feedlist_dict
+
+def slugify(title):
+    """ Slugify the feedlist title
+    :arg title: the title of a feedlist
+    """
+    return '-'.join(title.split())
