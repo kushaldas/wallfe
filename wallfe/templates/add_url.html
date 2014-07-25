@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<form method="POST">
+    {{ form.hidden_tag() }}
+    {{ form.feedurl.label }}{{ form.feedurl }}
+</form>
+{% endblock %}
