@@ -27,4 +27,7 @@ from flask_wtf import Form
 from wtforms import validators, TextField
 
 class AddFeedList(Form):
-    feedlist_url = TextField(u'Feed List URL', [validators.required()])
+    feedlist_name = TextField(u'Feed List Name', [validators.required()])
+
+class AddFeedURL(Form):
+    feedurl = TextField(u'Feed URL', [validators.required()])

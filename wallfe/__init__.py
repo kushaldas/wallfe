@@ -25,10 +25,12 @@
 
 import flask
 import feedparser
+import cPickle as pickle
 from tinydb import TinyDB
 from datetime import datetime
 
 from .forms import AddFeedList
+from .forms import AddFeedURL
 
 #Create the application
 APP = flask.Flask(__name__)
@@ -49,13 +51,36 @@ def add_list():
     """
     form = AddFeedList()
     if form.validate():
-        feedlist_url = form.feedlist_url.data
-        feedlist_dict = parse_feed(feedlist_url)
-        return flask.redirect('/')
+        feedlist_name = form.feedlist_name.data
+        return flask.redirect('/%s/add-feed' % feedlist_name.lower())
     return flask.render_template(
            'add_list.html',
            form=form)
 
+@APP.route('/<listname>/add-feed', methods=['GET', 'POST'])
+def add_feed(listname):
+    """ Add a Feed URL
+    :args listname: The name of the list
+    """
+
+    form = AddFeedURL()
+    if form.validate():
+        feedurl = form.feedurl.data
+        update(listname, feedurl)
+        update_info(listname, feedurl)
+    return flask.render_template(
+            'add_url.html',
+            form=form)
+
+def update(listname, feedurl):
+    """ update the feed to refresh the information
+    """
+    feed_info = feedparser.parse(feedurl)
+
+    feed_etag = feed_info.get('etag', None)
+    feed_modified = feed_info.get('modified', None)
+
+    return feed_info
 @APP.route('/view-list', methods=['GET', 'POST'])
 def view_list():
     """ View list of feed
