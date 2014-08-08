@@ -67,7 +67,6 @@ def add_feed(listname):
     if form.validate():
         feedurl = form.feedurl.data
         update(listname, feedurl)
-        update_info(listname, feedurl)
     return flask.render_template(
             'add_url.html',
             form=form)
@@ -77,8 +76,61 @@ def update(listname, feedurl):
     """
     feed_info = feedparser.parse(feedurl)
 
+    # RSS required channel elements
+    feed_title = feed_info.get('title', None)
+    feed_link = feed_info.get('link', None)
+    feed_description = feed_info.get('description', None)
     feed_etag = feed_info.get('etag', None)
     feed_modified = feed_info.get('modified', None)
+
+    feed_entries = feed_info.get('entries', None)
+
+    list_feed = feedlist[listname]
+
+    if feed_entries:
+        for feed_entry in feed_entries
+            # entry id - unique id for each post
+            if 'id' in feed_entry:
+                entry_id = feed_entry.id
+            elif 'link' in feed_entry:
+                entry_id = feed_entry.link
+            elif 'title' in feed_entry:
+                entry_id = feed_entry.title
+            elif 'summary' in feed_entry:
+                entry_id = feed_entry.summary
+
+            entryf['entry_id'] = entry_id
+
+            for key in feed_entry.keys():
+                if key.endswith('_detail'):
+                    if 'name' in feed_entry[key] and entry[key].name:
+                        entryf['name'] = feed_entry[key].name
+                    if 'email' in feed_entry[key] and entry[key].email:
+                        entryf['email'] = feed_entry[key].email
+                    if 'language' in feed_entry[key] and entry[key].email:
+                        entryf['language'] = feed_entry[key].language
+                elif key == 'source':
+                    if 'value' in feed_entry[key]:
+                        entryf['value'] = feed_entry[key].value
+                    if 'url' in feed_entry[key]:
+                        entryf['url'] = feed_entry[key].url
+                elif key == 'content':
+                    for item in feed_entry[key]:
+                        if item.type == 'text/html':
+                            entryf['value'] = item.value
+                        if item.type == 'text/plain':
+                            entryf['value'] = escape(item.value)
+                elif isinstance(feed_entry[key], (str, unicode)):
+                    try:
+                        detail = key + '_detail'
+                        if detail in feed_entry:
+                            if 'type' in feed_entry[detail]:
+                                if feed_entry[detail].type == 'text/html':
+                                    entryf['value'] = feed_entry[key]
+                                if feed_entry[detail].type == 'text/plain':
+                                    entryf['value'] = escape(feed_entry[key])
+                    except:
+                        pass
 
     return feed_info
 @APP.route('/view-list', methods=['GET', 'POST'])
