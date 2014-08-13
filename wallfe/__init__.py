@@ -88,7 +88,7 @@ def update(listname, feedurl):
     list_feed = feedlist[listname]
 
     if feed_entries:
-        for feed_entry in feed_entries
+        for feed_entry in feed_entries:
             # entry id - unique id for each post
             if 'id' in feed_entry:
                 entry_id = feed_entry.id
