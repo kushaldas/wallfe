@@ -62,7 +62,6 @@ def add_feed(listname):
     """ Add a Feed URL
     :args listname: The name of the list
     """
-
     form = AddFeedURL()
     if form.validate():
         feedurl = form.feedurl.data
@@ -71,68 +70,82 @@ def add_feed(listname):
             'add_url.html',
             form=form)
 
-def update(listname, feedurl):
+def update(category, feedurl):
     """ update the feed to refresh the information
+    :args category: name of the category
+    :args feedurl: url of the feed
     """
-    feed_info = feedparser.parse(feedurl)
+    channel = feedparser.parse(feedurl)
+
+    with open('database/db.json') as outfile:
+        planet = json.loads(outfile.read())
+
+    try:
+        planet = planet[0]
+    except IndexError:
+        planet = {}
+
+    if category in planet:
+        channels = planet[category]
 
     # RSS required channel elements
-    feed_title = feed_info.get('title', None)
-    feed_link = feed_info.get('link', None)
-    feed_description = feed_info.get('description', None)
-    feed_etag = feed_info.get('etag', None)
-    feed_modified = feed_info.get('modified', None)
+    channel_title = channel.get('title', None)
+    channel_link = channel.get('link', None)
+    channel_description = channel.get('description', None)
+    channel_etag = channel.get('etag', None)
+    channel_modified = channel.get('modified', None)
+    channel_entries = channel.get('entries', None)
 
-    feed_entries = feed_info.get('entries', None)
-
-    list_feed = feedlist[listname]
-
-    if feed_entries:
-        for feed_entry in feed_entries:
+    if channel_entries:
+        for news in channel_entries:
             # entry id - unique id for each post
-            if 'id' in feed_entry:
-                entry_id = feed_entry.id
-            elif 'link' in feed_entry:
-                entry_id = feed_entry.link
-            elif 'title' in feed_entry:
-                entry_id = feed_entry.title
-            elif 'summary' in feed_entry:
-                entry_id = feed_entry.summary
+            if 'id' in news:
+                news_id = news.id
+            elif 'link' in news:
+                news_id = news.link
+            elif 'title' in news:
+                news_id = news.title
+            elif 'summary' in news:
+                news_id = news.summary
 
-            entryf['entry_id'] = entry_id
+            if not news_id:
+                continue
 
-            for key in feed_entry.keys():
+            news_item['news_id'] = news_id
+
+            for key in news.keys():
                 if key.endswith('_detail'):
-                    if 'name' in feed_entry[key] and entry[key].name:
-                        entryf['name'] = feed_entry[key].name
-                    if 'email' in feed_entry[key] and entry[key].email:
-                        entryf['email'] = feed_entry[key].email
-                    if 'language' in feed_entry[key] and entry[key].email:
-                        entryf['language'] = feed_entry[key].language
+                    if 'name' in news[key] and news[key].name:
+                        news_item['name'] = news[key].name
+                    if 'email' in news[key] and news[key].email:
+                        news_item['email'] = news[key].email
+                    if 'language' in news[key] and news[key].email:
+                        news_item['language'] = news[key].language
                 elif key == 'source':
-                    if 'value' in feed_entry[key]:
-                        entryf['value'] = feed_entry[key].value
-                    if 'url' in feed_entry[key]:
-                        entryf['url'] = feed_entry[key].url
+                    if 'value' in news[key]:
+                        news_item['value'] = news[key].value
+                    if 'url' in news[key]:
+                        news_item['url'] = news[key].url
                 elif key == 'content':
-                    for item in feed_entry[key]:
+                    for item in news[key]:
                         if item.type == 'text/html':
-                            entryf['value'] = item.value
+                            news_item['value'] = item.value
                         if item.type == 'text/plain':
-                            entryf['value'] = escape(item.value)
-                elif isinstance(feed_entry[key], (str, unicode)):
+                            news_item['value'] = escape(item.value)
+                elif isinstance(news[key], (str, unicode)):
                     try:
                         detail = key + '_detail'
-                        if detail in feed_entry:
-                            if 'type' in feed_entry[detail]:
-                                if feed_entry[detail].type == 'text/html':
-                                    entryf['value'] = feed_entry[key]
-                                if feed_entry[detail].type == 'text/plain':
-                                    entryf['value'] = escape(feed_entry[key])
+                        if detail in news:
+                            if 'type' in news[detail]:
+                                if news[detail].type == 'text/html':
+                                    news_item['value'] = news[key]
+                                if news[detail].type == 'text/plain':
+                                    news_item['value'] = escape(news[key])
                     except:
                         pass
 
     return feed_info
+
 @APP.route('/view-list', methods=['GET', 'POST'])
 def view_list():
     """ View list of feed
