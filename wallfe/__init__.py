@@ -25,6 +25,8 @@
 
 import flask
 import feedparser
+import hashlib
+import logging
 import cPickle as pickle
 from tinydb import TinyDB
 from datetime import datetime
@@ -70,12 +72,30 @@ def add_feed(listname):
             'add_url.html',
             form=form)
 
+def get_channel(channels, _id, _id_value):
+    return filter(lambda x: key in x.keys() and x[_id] in _id_value, channels)
+
 def update(category, feedurl):
     """ update the feed to refresh the information
     :args category: name of the category
     :args feedurl: url of the feed
     """
     channel = feedparser.parse(feedurl)
+
+    if 'status' in channel:
+        url_status = str(channel.status)
+    elif 'entries' in channel and len(channel.entries)>0:
+        url_status = str(200)
+
+    if url_status == '301' and ('entries' in channel and \
+            len(channel.entries) > 0):
+        feedurl = channel.url
+    elif url_status == '304':
+        return
+    elif url_status == '408':
+        return
+    elif int(url_status) >= 400:
+        return
 
     with open('database/db.json') as outfile:
         planet = json.loads(outfile.read())
@@ -87,6 +107,9 @@ def update(category, feedurl):
 
     if category in planet:
         channels = planet[category]
+    else:
+        channels = {}
+        planet[category] = channels
 
     # RSS required channel elements
     channel_title = channel.get('title', None)
@@ -96,9 +119,30 @@ def update(category, feedurl):
     channel_modified = channel.get('modified', None)
     channel_entries = channel.get('entries', None)
 
+    if not channel_link:
+        return
+
+    _id = hashlib.md5(channel_link).hexdigest()
+
+    channel = get_channel(channels, 'id', _id)
+
+    if not channel:
+        channel = {}
+        channel['title'] = channel_title
+        channel['link'] = channel_link
+        channel['description'] = channel_description
+        channel['etag'] = channel_etag
+        channel['modified'] = channel_modified
+
+        channel_entries_items = []
+    else:
+        channel_entries_items = channel['entries']
+
     if channel_entries:
         for news in channel_entries:
-            # entry id - unique id for each post
+            news_item = {}
+            news_id = None
+            # news id - unique id for each post
             if 'id' in news:
                 news_id = news.id
             elif 'link' in news:
@@ -143,6 +187,8 @@ def update(category, feedurl):
                                     news_item['value'] = escape(news[key])
                     except:
                         pass
+            channel_entries_items.append(news_item)
+        channel['entries'] = channel_entries_items
 
     return feed_info
 
