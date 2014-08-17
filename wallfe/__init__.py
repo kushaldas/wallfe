@@ -26,6 +26,7 @@
 import flask
 import feedparser
 import hashlib
+import json
 import logging
 import cPickle as pickle
 from tinydb import TinyDB
@@ -73,7 +74,10 @@ def add_feed(listname):
             form=form)
 
 def get_channel(channels, _id, _id_value):
-    return filter(lambda x: key in x.keys() and x[_id] in _id_value, channels)
+    return filter(lambda x: _id in x.keys() and x[_id] in _id_value, channels)
+
+def escape(data):
+    return data.replace("&","&amp;").replace(">","&gt;").replace("<","&lt;")
 
 def update(category, feedurl):
     """ update the feed to refresh the information
@@ -97,26 +101,24 @@ def update(category, feedurl):
     elif int(url_status) >= 400:
         return
 
-    with open('database/db.json') as outfile:
+    with open('wallfe/database/db.json') as outfile:
         planet = json.loads(outfile.read())
 
-    try:
-        planet = planet[0]
-    except IndexError:
+    if not planet:
         planet = {}
 
     if category in planet:
         channels = planet[category]
     else:
-        channels = {}
-        planet[category] = channels
+        planet[category] = []
+        channels = planet[category]
 
     # RSS required channel elements
-    channel_title = channel.get('title', None)
-    channel_link = channel.get('link', None)
-    channel_description = channel.get('description', None)
-    channel_etag = channel.get('etag', None)
-    channel_modified = channel.get('modified', None)
+    channel_title = channel.feed.get('title', None)
+    channel_link = channel.feed.get('link', None)
+    channel_description = channel.feed.get('description', None)
+    channel_etag = channel.feed.get('etag', None)
+    channel_modified = channel.feed.get('modified', None)
     channel_entries = channel.get('entries', None)
 
     if not channel_link:
@@ -124,19 +126,22 @@ def update(category, feedurl):
 
     _id = hashlib.md5(channel_link).hexdigest()
 
-    channel = get_channel(channels, 'id', _id)
+    channel_item = get_channel(channels, 'id', _id)
+    print channel_item
 
-    if not channel:
-        channel = {}
-        channel['title'] = channel_title
-        channel['link'] = channel_link
-        channel['description'] = channel_description
-        channel['etag'] = channel_etag
-        channel['modified'] = channel_modified
+    if not channel_item:
+        channel_item = {}
+        channel_item['title'] = channel_title
+        channel_item['link'] = channel_link
+        channel_item['description'] = channel_description
+        channel_item['etag'] = channel_etag
+        channel_item['modified'] = channel_modified
+        channel_item['id'] = _id
 
         channel_entries_items = []
     else:
-        channel_entries_items = channel['entries']
+        channel_item = channel_item[0]
+        channel_entries_items = channel_item['entries']
 
     if channel_entries:
         for news in channel_entries:
@@ -163,7 +168,7 @@ def update(category, feedurl):
                         news_item['name'] = news[key].name
                     if 'email' in news[key] and news[key].email:
                         news_item['email'] = news[key].email
-                    if 'language' in news[key] and news[key].email:
+                    if 'language' in news[key] and news[key].language:
                         news_item['language'] = news[key].language
                 elif key == 'source':
                     if 'value' in news[key]:
@@ -188,9 +193,14 @@ def update(category, feedurl):
                     except:
                         pass
             channel_entries_items.append(news_item)
-        channel['entries'] = channel_entries_items
+        channel_item['entries'] = channel_entries_items
 
-    return feed_info
+    planet[category].append(channel_item)
+
+    with open('wallfe/database/db.json', 'w') as outfile:
+        json.dump(planet, outfile)
+
+    return None
 
 @APP.route('/view-list', methods=['GET', 'POST'])
 def view_list():
