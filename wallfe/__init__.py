@@ -212,30 +212,6 @@ def view_list():
             'view_list.html',
             slugs=slugs)
 
-def parse_feed(feed_url):
-    """ Parse the RSS Feed URL
-    :arg url: the url of the feed to be parsed
-    """
-    feedlist = feedparser.parse(feed_url)
-    feedlist_dict = {}
-    feedlist_dict['slug'] = slugify(feedlist.feed.title)
-    feedlist_dict['title'] = feedlist.feed.title
-    feedlist_dict['count'] = len(feedlist.entries)
-
-    entries = feedlist.entries
-    for counter, entry in enumerate(entries):
-        feedlist_dict[counter] = {}
-        feedlist_dict[counter]['author'] = entry.author
-        feedlist_dict[counter]['publisted'] = entry.published
-        feedlist_dict[counter]['link'] = entry.link
-        feedlist_dict[counter]['content'] = entry.content[0]
-        feedlist_dict[counter]['summary'] = entry.summary
-    feedlist_dict['updated_at'] = str(datetime.now())
-
-    db.insert(feedlist_dict)
-
-    return feedlist_dict
-
 def slugify(title):
     """ Slugify the feedlist title
     :arg title: the title of a feedlist
