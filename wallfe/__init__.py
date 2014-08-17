@@ -29,17 +29,15 @@ import hashlib
 import json
 import logging
 import cPickle as pickle
-from tinydb import TinyDB
 from datetime import datetime
 
-from .forms import AddFeedList
-from .forms import AddFeedURL
+from .forms import AddFeedList, AddFeedURL
+from .utils import get_channel, escape, slugify
+
 
 #Create the application
 APP = flask.Flask(__name__)
 APP.secret_key = 'Random Key'
-
-db = TinyDB('./wallfe/database/db.json')
 
 @APP.route('/', methods=['GET', 'POST'])
 def index():
@@ -72,12 +70,6 @@ def add_feed(listname):
     return flask.render_template(
             'add_url.html',
             form=form)
-
-def get_channel(channels, _id, _id_value):
-    return filter(lambda x: _id in x.keys() and x[_id] in _id_value, channels)
-
-def escape(data):
-    return data.replace("&","&amp;").replace(">","&gt;").replace("<","&lt;")
 
 def update(category, feedurl):
     """ update the feed to refresh the information
@@ -211,9 +203,3 @@ def view_list():
     return flask.render_template(
             'view_list.html',
             slugs=slugs)
-
-def slugify(title):
-    """ Slugify the feedlist title
-    :arg title: the title of a feedlist
-    """
-    return '-'.join(title.lower().split())
