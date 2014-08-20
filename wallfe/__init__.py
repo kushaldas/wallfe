@@ -58,6 +58,20 @@ def add_list():
            'add_list.html',
            form=form)
 
+@APP.route('/list/<listname>/', methods=['GET', 'POST'])
+def channel_list(listname):
+    """ Add a Feed URL
+    :args listname: The name of the list
+    """
+    with open('wallfe/database/db.json') as outfile:
+        planet = json.loads(outfile.read())
+
+    channel_lists = map(lambda x: {'link':x['link'], 'title':x['title']}, planet[listname])
+
+    return flask.render_template(
+            'channel_list.html',
+            channel_lists=channel_lists)
+
 @APP.route('/<listname>/add-feed', methods=['GET', 'POST'])
 def add_feed(listname):
     """ Add a Feed URL
@@ -70,6 +84,16 @@ def add_feed(listname):
     return flask.render_template(
             'add_url.html',
             form=form)
+
+@APP.route('/view-lists/', methods=['GET', 'POST'])
+def view_list():
+    """ View list of feed
+    """
+    with open('wallfe/database/db.json') as outfile:
+        planet = json.loads(outfile.read())
+    return flask.render_template(
+            'view_list.html',
+            slugs=planet.keys())
 
 def update(category, feedurl):
     """ update the feed to refresh the information
@@ -194,12 +218,3 @@ def update(category, feedurl):
 
     return None
 
-@APP.route('/view-list', methods=['GET', 'POST'])
-def view_list():
-    """ View list of feed
-    """
-    feedlists = db.all()
-    slugs = map(lambda x: x['slug'], feedlists)
-    return flask.render_template(
-            'view_list.html',
-            slugs=slugs)

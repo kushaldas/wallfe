@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    {% for channel_list in channel_lists %}
+        <a href="{{channel_list['link']}}">{{channel_list['title']}}</a>
+    {% endfor %}
+{% endblock %}
