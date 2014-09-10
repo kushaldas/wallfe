@@ -1,7 +1,12 @@
-@font-face {
-  font-family: Typoster Outline;
-  src: url("fonts/Typoster_outline.otf");
+.contain-to-grid {
+  width: 100%;
+  background: #fff;
 }
-.top-bar {
-  font-family: 'Typoster Outline', serif;
+.contain-to-grid .top-bar {
+  background: #fff;
+  border-bottom: 1px solid #e5e6e7;
+}
+.contain-to-grid .top-bar .logo {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 30px;
 }
