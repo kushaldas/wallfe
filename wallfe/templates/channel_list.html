@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'base/base_list.html' %}
 
-{% block body %}
+{% block container %}
     {% for channel_list in channel_lists %}
         <a href="{{channel_list['link']}}">{{channel_list['title']}}</a>
     {% endfor %}

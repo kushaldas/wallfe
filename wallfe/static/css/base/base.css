@@ -1,0 +1,7 @@
+@font-face {
+  font-family: Typoster Outline;
+  src: url("fonts/Typoster_outline.otf");
+}
+.top-bar {
+  font-family: 'Typoster Outline', serif;
+}
