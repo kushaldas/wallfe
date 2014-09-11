@@ -14,13 +14,14 @@
                     <section class="top-bar-section">
                         <!-- Right Nav Section -->
                         <ul class="right">
-                            <li><a href="#">Lists</a></li>
+                            <li><a href="#">Add</a></li>
+                            <li><a href="#">View</a></li>
                         </ul>
                     </section>
                 </nav>
             </div>
+            {% block container %}
+            {% endblock %}
         </div>
-    {% endblock %}
-    {% block container %}
     {% endblock %}
 {% endblock %}
