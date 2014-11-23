@@ -26,3 +26,8 @@ Use a virtualenv::
 Install dependencies::
 
     $ pip install -r requirements.txt
+
+Starting the development server
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    $ python runserver.py
