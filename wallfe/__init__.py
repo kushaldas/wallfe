@@ -36,7 +36,7 @@ from .utils import get_channel, escape, slugify
 
 
 #Create the application
-APP = flask.Flask(__name__)
+APP = flask.Flask(__name__, static_url_path='')
 APP.secret_key = 'Random Key'
 
 @APP.route('/', methods=['GET', 'POST'])

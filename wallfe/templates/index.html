@@ -1,5 +1,95 @@
-{% extends 'base/base_list.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Wallfe - Personal feed reader</title>
+	<meta charset="utf-8">
+	<meta name="author" content="@chowdhury_sayan">
+	<meta name="description" content="A personal feed reader"/>
+	
+	<!-- third party css -->
+	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+	<!-- end third party css -->
 
-{% block container %}
-    Hola
-{% endblock %}
+	<link rel="stylesheet" type="text/css" href="css/reset.css">
+	<link rel="stylesheet" type="text/css" href="css/fancybox-thumbs.css">
+	<link rel="stylesheet" type="text/css" href="css/fancybox-buttons.css">
+	<link rel="stylesheet" type="text/css" href="css/fancybox.css">
+	<link rel="stylesheet" type="text/css" href="css/animate.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/fancybox.js"></script>
+    <script type="text/javascript" src="js/fancybox-buttons.js"></script>
+    <script type="text/javascript" src="js/fancybox-media.js"></script>
+    <script type="text/javascript" src="js/fancybox-thumbs.js"></script>
+    <script type="text/javascript" src="js/wow.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+</head>
+<body>
+
+	<section class="billboard dark">
+		<header class="wrapper dark">
+			<nav>
+				<ul>
+					<li><a href="">Feed</a></li>
+					<li><a href="">Docs</a></li>
+					<li><a href="">Contribute</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<div class="caption dark animated wow fadeInDown clearfix">
+			<h1>Wallfe</h1>
+			<p>Personal feed Reader</p>
+			<hr>
+		</div>
+		<div class="shadow"></div>
+	</section><!--  End billboard  -->
+
+
+	<section class="services wrapper">
+		<ul class="clearfix">
+			<li class="animated wow fadeInDown">
+				<img class="icon" src="img/icon1.png" alt=""/>
+				<span class="separator"></span>
+				<h2>Organize</h2>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean tincidunt consectetur risus, varius tincidunt lorem tincidunt quis. Nulla quis nibh ultricies, mollis dolor ut, pellentesque metus. Nunc et risus condimentum nisi eleifend aliquam sagittis in nulla. Fusce eu tortor at dui facilisis vestibulum ac eu eros. Nulla facilisi. Vestibulum dignissim ultrices rhoncus. Donec eleifend posuere mattis. Vestibulum ante tortor, ultricies ac viverra vel, luctus at arcu.</p>
+			</li>
+			<li class="animated wow fadeInDown"  data-wow-delay=".2s">
+				<img class="icon" src="img/icon2.png" alt=""/>
+				<span class="separator"></span>
+				<h2>Intelligent</h2>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean tincidunt consectetur risus, varius tincidunt lorem tincidunt quis. Nulla quis nibh ultricies, mollis dolor ut, pellentesque metus. Nunc et risus condimentum nisi eleifend aliquam sagittis in nulla. Fusce eu tortor at dui facilisis vestibulum ac eu eros. Nulla facilisi. Vestibulum dignissim ultrices rhoncus. Donec eleifend posuere mattis. Vestibulum ante tortor, ultricies ac viverra vel, luctus at arcu..</p>
+			</li>
+			<li class="animated wow fadeInDown"  data-wow-delay=".4s">
+				<img class="icon" src="img/icon3.png" alt=""/>
+				<span class="separator"></span>
+				<h2>Convinient</h2>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean tincidunt consectetur risus, varius tincidunt lorem tincidunt quis. Nulla quis nibh ultricies, mollis dolor ut, pellentesque metus. Nunc et risus condimentum nisi eleifend aliquam sagittis in nulla. Fusce eu tortor at dui facilisis vestibulum ac eu eros. Nulla facilisi. Vestibulum dignissim ultrices rhoncus. Donec eleifend posuere mattis. Vestibulum ante tortor, ultricies ac viverra vel, luctus at arcu.</p>
+			</li>
+		</ul>
+	</section><!--  End services  -->
+
+
+	<section class="video">
+		<a href="http://www.youtube.com/embed/cBJyo0tgLnw" id="play_btn" class="fancybox animated wow flipInX" data-wow-duration="2s"></a>
+	</section><!--  End video  -->
+
+	<footer>
+		<div class="wrapper">
+			<div class="rights">
+				<p>Built with <i class="fa fa-heart" style="color: red"></i> by @chowdhury_sayan</p>
+			</div>
+
+			<nav>
+				<ul>
+					<li><a href="#">Feed</a></li>
+					<li><a href="#">Contribute</a></li>
+					<li><a href="#">Docs</a></li>
+				</ul>
+			</nav>
+		</div>		
+	</footer><!--  End footer  -->
+    <script src='../ga.js'></script>
+</body>
+</html>
